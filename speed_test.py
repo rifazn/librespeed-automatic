@@ -11,6 +11,8 @@ QUALITY_SELECTOR = ".testArea2"
 SPEED_SELECTOR = ".testArea"
 SERVERS_SELECTOR = 'Server'
 
+TEST_INTERVAL = 30 * 60  # 30 mins
+
 def run_test():
 
     start_firefox(SPEEDTESTER_URL, headless=HEADLESS)
@@ -47,19 +49,20 @@ def run_test():
         # Save results
         dl = ''.join(download.split(':')[1:])
         ul = ''.join(upload.split(':')[1:])
-        with open('test-results.csv', 'a') as out:
-            out.write(f'{TIMENOW}, {server}, {ping}, {jitter}, {dl}, {ul}\n')
+        with open('test-results.tsv', 'a') as out:
+            out.write(f'{TIMENOW}\t{server}\t{ping}\t{jitter}\t{dl}\t{ul}\n')
         print('Results saved.')
     kill_browser()
 
 while True:
-    TIMENOW = datetime.datetime.now().isoformat()
-    print('Starting test at', TIMENOW)
+    TIMENOW = datetime.datetime.now()
+    print('Starting test at', TIMENOW.isoformat())
     try:
         run_test()
     except Exception as err:
         print(err)
         with open('test-results.csv', 'a') as out:
             out.write(f'{TIMENOW}, {err}\n')
-    time.sleep(60 * 30) # 30 mins
+    print(f'-- Next test at: {(TIMENOW + datetime.timedelta(seconds=TEST_INTERVAL)).isoformat()} --')
+    time.sleep(TEST_INTERVAL)
 
