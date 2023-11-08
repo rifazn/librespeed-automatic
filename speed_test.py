@@ -30,7 +30,6 @@ def run_test():
         # Start test
         click(S(START_SELECTOR))
         wait_until(S(FINISHED_SELECTOR).exists, timeout_secs=90, interval_secs=1)
-        print("\nTest complete.")
 
         # Test finished, collect data
         ping__jitter = find_all(S(QUALITY_SELECTOR))
@@ -43,6 +42,7 @@ def run_test():
 
 
         # Print results
+        print("\nTest complete.")
         print()
         print(f"  {server}  ".center(60, '*'))
         print(ping, jitter, download, upload, sep='\n')
