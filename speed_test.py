@@ -6,6 +6,7 @@ HEADLESS = sys.argv.count('--headless') > 0
 SPEEDTESTER_URL = "librespeed.org"
 START_SELECTOR = "#startStopBtn"
 FINISHED_SELECTOR = "#shareArea"
+FNAME = 'test-results.tsv'
 
 QUALITY_SELECTOR = ".testArea2"
 SPEED_SELECTOR = ".testArea"
@@ -46,11 +47,15 @@ def run_test():
         print(f"  {server}  ".center(60, '*'))
         print(ping, jitter, download, upload, sep='\n')
 
+        # Remove units from results
+        dl = ''.join(download.split(':')[1])
+        ul = ''.join(upload.split(':')[1])
+        p = (''.join(ping.split(':')[1])).replace(' ms', '')
+        j = ''.join(jitter.split(':')[1]).replace(' ms', '')
+
         # Save results
-        dl = ''.join(download.split(':')[1:])
-        ul = ''.join(upload.split(':')[1:])
-        with open('test-results.tsv', 'a') as out:
-            out.write(f'{TIMENOW}\t{server}\t{ping}\t{jitter}\t{dl}\t{ul}\n')
+        with open(FNAME, 'a') as out:
+            out.write(f'{TIMENOW.date()}\t{TIMENOW.time()}\t{server}\t{p}\t{j}\t{dl}\t{ul}\n')
         print('Results saved.')
     kill_browser()
 
@@ -61,8 +66,8 @@ while True:
         run_test()
     except Exception as err:
         print(err)
-        with open('test-results.csv', 'a') as out:
+        with open(FNAME, 'a') as out:
             out.write(f'{TIMENOW}, {err}\n')
-    print(f'-- Next test at: {(TIMENOW + datetime.timedelta(seconds=TEST_INTERVAL)).isoformat()} --')
+    print(f'\n-- Next test at: {(TIMENOW + datetime.timedelta(seconds=TEST_INTERVAL)).isoformat()} --')
     time.sleep(TEST_INTERVAL)
 
